@@ -13,7 +13,7 @@ class OrderService
     /**
      * Create an order from the current cart.
      */
-    public function createOrder(array $customerData, array $cartItems): Order
+    public function createOrder(array $customerData, iterable $cartItems): Order
     {
         return DB::transaction(function () use ($customerData, $cartItems) {
             // Calculate totals
