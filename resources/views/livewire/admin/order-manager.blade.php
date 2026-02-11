@@ -49,7 +49,7 @@
                                     <p class="font-semibold text-gray-800 text-sm">{{ $order->customer_name }}</p>
                                     <p class="text-xs text-gray-500">{{ $order->customer_email }}</p>
                                 </td>
-                                <td class="px-4 py-3 font-semibold text-gray-900">${{ number_format($order->total, 2) }}</td>
+                                <td class="px-4 py-3 font-semibold text-gray-900">€{{ number_format($order->total, 2) }}</td>
                                 <td class="px-4 py-3">
                                     <span class="px-2 py-1 rounded-full text-xs font-semibold
                                         {{ $order->status === 'confirmed' ? 'bg-green-100 text-green-700' : '' }}
@@ -158,13 +158,13 @@
                                             </p>
                                             <p class="text-xs text-gray-500">{{ ucfirst($item->size) }}, {{ ucfirst($item->crust) }}</p>
                                         </div>
-                                        <span class="font-semibold text-sm text-gray-700">${{ number_format($item->total_price, 2) }}</span>
+                                        <span class="font-semibold text-sm text-gray-700">€{{ number_format($item->total_price, 2) }}</span>
                                     </div>
                                     @if($item->toppings->isNotEmpty())
                                         <div class="mt-1 flex flex-wrap gap-1">
                                             @foreach($item->toppings as $topping)
                                                 <span class="text-xs bg-white text-gray-500 px-1.5 py-0.5 rounded border">
-                                                    {{ $topping->pivot->topping_name }} (${{ number_format($topping->pivot->topping_price, 2) }})
+                                                    {{ $topping->pivot->topping_name }} (€{{ number_format($topping->pivot->topping_price, 2) }})
                                                 </span>
                                             @endforeach
                                         </div>
@@ -207,16 +207,16 @@
                         <div class="space-y-1 text-sm">
                             <div class="flex justify-between text-gray-600">
                                 <span>Subtotal</span>
-                                <span>${{ number_format($selectedOrder->subtotal, 2) }}</span>
+                                <span>€{{ number_format($selectedOrder->subtotal, 2) }}</span>
                             </div>
                             <div class="flex justify-between text-gray-600">
                                 <span>Tax</span>
-                                <span>${{ number_format($selectedOrder->tax, 2) }}</span>
+                                <span>€{{ number_format($selectedOrder->tax, 2) }}</span>
                             </div>
                             <hr class="my-1">
                             <div class="flex justify-between font-extrabold text-gray-900">
                                 <span>Total</span>
-                                <span class="text-orange-600">${{ number_format($selectedOrder->total, 2) }}</span>
+                                <span class="text-orange-600">€{{ number_format($selectedOrder->total, 2) }}</span>
                             </div>
                         </div>
                     </div>

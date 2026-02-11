@@ -85,7 +85,7 @@
                                 </p>
                             @endif
                         </div>
-                        <span class="font-semibold text-gray-700">${{ number_format($item->total_price, 2) }}</span>
+                        <span class="font-semibold text-gray-700">€{{ number_format($item->total_price, 2) }}</span>
                     </div>
                 @endforeach
             </div>
@@ -120,16 +120,16 @@
             <div class="space-y-1 text-sm">
                 <div class="flex justify-between text-gray-600">
                     <span>Subtotal</span>
-                    <span>${{ number_format($order->subtotal, 2) }}</span>
+                    <span>€{{ number_format($order->subtotal, 2) }}</span>
                 </div>
                 <div class="flex justify-between text-gray-600">
                     <span>Tax</span>
-                    <span>${{ number_format($order->tax, 2) }}</span>
+                    <span>€{{ number_format($order->tax, 2) }}</span>
                 </div>
                 <hr class="my-2">
                 <div class="flex justify-between text-xl font-extrabold text-gray-900">
                     <span>Total</span>
-                    <span class="text-orange-600">${{ number_format($order->total, 2) }}</span>
+                    <span class="text-orange-600">€{{ number_format($order->total, 2) }}</span>
                 </div>
             </div>
         </div>

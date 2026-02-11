@@ -50,7 +50,47 @@ class CartController extends Controller
             );
         }
 
-        return redirect()->route('cart.index')->with('success', 'Pizza added to cart!');
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Pizza added to cart!',
+                'cartCount' => $this->cartService->getItemCount(),
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Pizza added to cart!');
+    }
+
+    /**
+     * Get cart data as JSON (for sidebar).
+     */
+    public function sidebar()
+    {
+        $items = $this->cartService->getItems();
+        $subtotal = $this->cartService->getSubtotal();
+        $tax = round($subtotal * 0.08, 2);
+        $total = round($subtotal + $tax, 2);
+
+        return response()->json([
+            'items' => $items->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'name' => $item->pizza?->name ?? $item->custom_name ?? 'Custom Pizza',
+                    'size' => ucfirst($item->size),
+                    'crust' => ucfirst($item->crust),
+                    'quantity' => $item->quantity,
+                    'unit_price' => $item->unit_price,
+                    'toppings_total' => $item->toppings->sum('price'),
+                    'total_price' => ($item->unit_price + $item->toppings->sum('price')) * $item->quantity,
+                    'toppings' => $item->toppings->pluck('name')->toArray(),
+                    'is_custom' => $item->is_custom,
+                ];
+            }),
+            'subtotal' => $subtotal,
+            'tax' => $tax,
+            'total' => $total,
+            'count' => $this->cartService->getItemCount(),
+        ]);
     }
 
     /**

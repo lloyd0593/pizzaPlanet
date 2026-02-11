@@ -38,7 +38,7 @@
                     <div class="p-6">
                         <div class="flex items-start justify-between mb-2">
                             <h3 class="text-xl font-bold text-gray-900">{{ $pizza->name }}</h3>
-                            <span class="text-2xl font-extrabold text-orange-600">${{ number_format($pizza->base_price, 2) }}</span>
+                            <span class="text-2xl font-extrabold text-orange-600">€{{ number_format($pizza->base_price, 2) }}</span>
                         </div>
 
                         <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ $pizza->description }}</p>
@@ -70,7 +70,7 @@
                                class="flex-1 text-center bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg transition text-sm">
                                 <i class="fas fa-eye mr-1"></i> Details
                             </a>
-                            <form method="POST" action="{{ route('cart.add') }}" class="flex-1">
+                            <form method="POST" action="{{ route('cart.add') }}" class="flex-1" data-ajax-cart>
                                 @csrf
                                 <input type="hidden" name="pizza_id" value="{{ $pizza->id }}">
                                 <input type="hidden" name="size" value="{{ $pizza->size }}">

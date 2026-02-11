@@ -44,9 +44,9 @@
                             </p>
                         @endif
                         <p class="text-sm text-gray-400 mt-1">
-                            Base: ${{ number_format($item->unit_price, 2) }}
+                            Base: €{{ number_format($item->unit_price, 2) }}
                             @if($item->toppings->sum('price') > 0)
-                                + Toppings: ${{ number_format($item->toppings->sum('price'), 2) }}
+                                + Toppings: €{{ number_format($item->toppings->sum('price'), 2) }}
                             @endif
                         </p>
                     </div>
@@ -70,7 +70,7 @@
 
                     {{-- Item Total --}}
                     <div class="text-right">
-                        <span class="text-xl font-extrabold text-orange-600">${{ number_format($item->total_price, 2) }}</span>
+                        <span class="text-xl font-extrabold text-orange-600">€{{ number_format($item->total_price, 2) }}</span>
                     </div>
 
                     {{-- Remove Button --}}
@@ -91,16 +91,16 @@
             <div class="space-y-2 text-gray-600">
                 <div class="flex justify-between">
                     <span>Subtotal</span>
-                    <span class="font-semibold">${{ number_format($subtotal, 2) }}</span>
+                    <span class="font-semibold">€{{ number_format($subtotal, 2) }}</span>
                 </div>
                 <div class="flex justify-between">
                     <span>Tax (8%)</span>
-                    <span class="font-semibold">${{ number_format($tax, 2) }}</span>
+                    <span class="font-semibold">€{{ number_format($tax, 2) }}</span>
                 </div>
                 <hr class="my-2">
                 <div class="flex justify-between text-xl font-extrabold text-gray-900">
                     <span>Total</span>
-                    <span class="text-orange-600">${{ number_format($total, 2) }}</span>
+                    <span class="text-orange-600">€{{ number_format($total, 2) }}</span>
                 </div>
             </div>
 

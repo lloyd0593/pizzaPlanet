@@ -80,7 +80,7 @@
                     <tr class="hover:bg-gray-50">
                         <td class="px-6 py-4 text-gray-500 text-sm">#{{ $topping->id }}</td>
                         <td class="px-6 py-4 font-bold text-gray-900">{{ $topping->name }}</td>
-                        <td class="px-6 py-4 font-semibold text-gray-900">${{ number_format($topping->price, 2) }}</td>
+                        <td class="px-6 py-4 font-semibold text-gray-900">€{{ number_format($topping->price, 2) }}</td>
                         <td class="px-6 py-4 text-center">
                             <button wire:click="toggleActive({{ $topping->id }})"
                                     class="px-3 py-1 rounded-full text-xs font-semibold transition cursor-pointer

@@ -93,7 +93,7 @@
                                 </p>
                                 <p class="text-gray-400 text-xs">{{ ucfirst($item->size) }}, {{ ucfirst($item->crust) }}</p>
                             </div>
-                            <span class="font-semibold text-gray-700">${{ number_format($item->total_price, 2) }}</span>
+                            <span class="font-semibold text-gray-700">€{{ number_format($item->total_price, 2) }}</span>
                         </div>
                     @endforeach
                 </div>
@@ -103,16 +103,16 @@
                 <div class="space-y-2 text-sm">
                     <div class="flex justify-between text-gray-600">
                         <span>Subtotal</span>
-                        <span>${{ number_format($subtotal, 2) }}</span>
+                        <span>€{{ number_format($subtotal, 2) }}</span>
                     </div>
                     <div class="flex justify-between text-gray-600">
                         <span>Tax (8%)</span>
-                        <span>${{ number_format($tax, 2) }}</span>
+                        <span>€{{ number_format($tax, 2) }}</span>
                     </div>
                     <hr>
                     <div class="flex justify-between text-lg font-extrabold text-gray-900">
                         <span>Total</span>
-                        <span class="text-orange-600">${{ number_format($total, 2) }}</span>
+                        <span class="text-orange-600">€{{ number_format($total, 2) }}</span>
                     </div>
                 </div>
             </div>

@@ -11,12 +11,12 @@
             <div class="text-center text-white">
                 <i class="fas fa-wand-magic-sparkles text-5xl mb-2"></i>
                 <h1 class="text-3xl font-extrabold">Build Your Own Pizza</h1>
-                <p class="text-purple-100">Starting at $7.99</p>
+                <p class="text-purple-100">Starting at €10.00</p>
             </div>
         </div>
 
         <div class="p-8">
-            <form method="POST" action="{{ route('cart.add') }}" id="customPizzaForm">
+            <form method="POST" action="{{ route('cart.add') }}" id="customPizzaForm" data-ajax-cart>
                 @csrf
                 <input type="hidden" name="is_custom" value="1">
 
@@ -75,14 +75,14 @@
                                 <input type="radio" name="crust" value="thick" {{ old('crust') === 'thick' ? 'checked' : '' }} class="text-orange-600 mr-3">
                                 <div>
                                     <span class="font-semibold">Thick</span>
-                                    <span class="text-gray-400 text-sm block">Deep dish +$1.50</span>
+                                    <span class="text-gray-400 text-sm block">Deep dish +€1.50</span>
                                 </div>
                             </label>
                             <label class="flex items-center p-3 border-2 rounded-lg cursor-pointer hover:border-orange-400 transition border-gray-200">
                                 <input type="radio" name="crust" value="stuffed" {{ old('crust') === 'stuffed' ? 'checked' : '' }} class="text-orange-600 mr-3">
                                 <div>
                                     <span class="font-semibold">Stuffed</span>
-                                    <span class="text-gray-400 text-sm block">Cheese-filled +$2.50</span>
+                                    <span class="text-gray-400 text-sm block">Cheese-filled +€2.50</span>
                                 </div>
                             </label>
                         </div>
@@ -113,7 +113,7 @@
                                            class="rounded text-green-600 focus:ring-green-500 topping-checkbox">
                                     <span class="font-medium text-gray-700">{{ $topping->name }}</span>
                                 </div>
-                                <span class="text-sm font-semibold text-green-600">+${{ number_format($topping->price, 2) }}</span>
+                                <span class="text-sm font-semibold text-green-600">+€{{ number_format($topping->price, 2) }}</span>
                             </label>
                         @endforeach
                     </div>

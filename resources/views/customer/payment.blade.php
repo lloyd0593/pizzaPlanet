@@ -9,7 +9,7 @@
     {{-- Order Total --}}
     <div class="bg-orange-50 border border-orange-200 rounded-xl p-4 mb-6 flex items-center justify-between">
         <span class="text-gray-700 font-semibold">Order #{{ $order->id }} Total:</span>
-        <span class="text-2xl font-extrabold text-orange-600">${{ number_format($order->total, 2) }}</span>
+        <span class="text-2xl font-extrabold text-orange-600">€{{ number_format($order->total, 2) }}</span>
     </div>
 
     @if($errors->any())
@@ -97,7 +97,7 @@
 
             <button type="submit"
                     class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition shadow-lg hover:shadow-xl text-lg mt-4">
-                <i class="fas fa-lock mr-2"></i> Pay ${{ number_format($order->total, 2) }}
+                <i class="fas fa-lock mr-2"></i> Pay €{{ number_format($order->total, 2) }}
             </button>
         </form>
     </div>

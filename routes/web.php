@@ -24,6 +24,7 @@ Route::get('/customize', [MenuController::class, 'customize'])->name('pizza.cust
 // Cart
 Route::prefix('cart')->name('cart.')->group(function () {
     Route::get('/', [CartController::class, 'index'])->name('index');
+    Route::get('/sidebar', [CartController::class, 'sidebar'])->name('sidebar');
     Route::post('/add', [CartController::class, 'add'])->name('add');
     Route::patch('/{cartItemId}', [CartController::class, 'update'])->name('update');
     Route::delete('/clear', [CartController::class, 'clear'])->name('clear');

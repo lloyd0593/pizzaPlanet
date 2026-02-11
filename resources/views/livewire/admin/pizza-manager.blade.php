@@ -136,7 +136,7 @@
                                 <p class="text-xs text-gray-500 line-clamp-1">{{ $pizza->description }}</p>
                             </div>
                         </td>
-                        <td class="px-6 py-4 font-semibold text-gray-900">${{ number_format($pizza->base_price, 2) }}</td>
+                        <td class="px-6 py-4 font-semibold text-gray-900">€{{ number_format($pizza->base_price, 2) }}</td>
                         <td class="px-6 py-4">
                             <span class="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">{{ ucfirst($pizza->size) }}</span>
                             <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full">{{ ucfirst($pizza->crust) }}</span>

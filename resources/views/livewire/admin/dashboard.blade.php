@@ -50,11 +50,11 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-500 font-semibold uppercase">Revenue</p>
-                    <p class="text-3xl font-extrabold text-gray-900">${{ number_format($totalRevenue, 2) }}</p>
+                    <p class="text-3xl font-extrabold text-gray-900">€{{ number_format($totalRevenue, 2) }}</p>
                     <p class="text-xs text-green-600 mt-1">From successful payments</p>
                 </div>
                 <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                    <i class="fas fa-dollar-sign text-green-500 text-xl"></i>
+                    <i class="fas fa-euro-sign text-green-500 text-xl"></i>
                 </div>
             </div>
         </div>
@@ -120,7 +120,7 @@
                         <tr class="hover:bg-gray-50">
                             <td class="px-6 py-3 font-bold text-gray-900">#{{ $order->id }}</td>
                             <td class="px-6 py-3 text-gray-700">{{ $order->customer_name }}</td>
-                            <td class="px-6 py-3 font-semibold text-gray-900">${{ number_format($order->total, 2) }}</td>
+                            <td class="px-6 py-3 font-semibold text-gray-900">€{{ number_format($order->total, 2) }}</td>
                             <td class="px-6 py-3">
                                 <span class="px-2 py-1 rounded-full text-xs font-semibold
                                     {{ $order->status === 'confirmed' ? 'bg-green-100 text-green-700' : '' }}

@@ -18,7 +18,7 @@
                     <h1 class="text-3xl font-extrabold text-gray-900">{{ $pizza->name }}</h1>
                     <p class="text-gray-600 mt-2">{{ $pizza->description }}</p>
                 </div>
-                <span class="text-3xl font-extrabold text-orange-600">${{ number_format($pizza->base_price, 2) }}</span>
+                <span class="text-3xl font-extrabold text-orange-600">€{{ number_format($pizza->base_price, 2) }}</span>
             </div>
 
             {{-- Default Info --}}
@@ -48,7 +48,7 @@
             <hr class="my-6">
 
             {{-- Add to Cart Form --}}
-            <form method="POST" action="{{ route('cart.add') }}">
+            <form method="POST" action="{{ route('cart.add') }}" data-ajax-cart>
                 @csrf
                 <input type="hidden" name="pizza_id" value="{{ $pizza->id }}">
 
@@ -69,8 +69,8 @@
                         <select name="crust" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
                             <option value="thin" {{ $pizza->crust === 'thin' ? 'selected' : '' }}>Thin</option>
                             <option value="regular" {{ $pizza->crust === 'regular' ? 'selected' : '' }}>Regular</option>
-                            <option value="thick" {{ $pizza->crust === 'thick' ? 'selected' : '' }}>Thick (+$1.50)</option>
-                            <option value="stuffed" {{ $pizza->crust === 'stuffed' ? 'selected' : '' }}>Stuffed (+$2.50)</option>
+                            <option value="thick" {{ $pizza->crust === 'thick' ? 'selected' : '' }}>Thick (+€1.50)</option>
+                            <option value="stuffed" {{ $pizza->crust === 'stuffed' ? 'selected' : '' }}>Stuffed (+€2.50)</option>
                         </select>
                     </div>
 
@@ -95,7 +95,7 @@
                                        {{ $pizza->toppings->contains($topping->id) ? 'checked' : '' }}
                                        class="rounded text-orange-600 focus:ring-orange-500">
                                 <span class="text-sm text-gray-700">{{ $topping->name }}</span>
-                                <span class="text-xs text-gray-400">+${{ number_format($topping->price, 2) }}</span>
+                                <span class="text-xs text-gray-400">+€{{ number_format($topping->price, 2) }}</span>
                             </label>
                         @endforeach
                     </div>
