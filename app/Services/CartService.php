@@ -158,7 +158,7 @@ class CartService
     /**
      * Update the quantity of a cart item.
      */
-    public function updateQuantity(int $cartItemId, int $quantity): CartItem
+    public function updateQuantity(int $cartItemId, int $quantity): ?CartItem
     {
         $cartItem = $this->getCartQuery()->where('cart_items.id', $cartItemId)->firstOrFail();
 

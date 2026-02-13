@@ -16,6 +16,7 @@ class CheckoutControllerTest extends TestCase
 
     private Pizza $pizza;
     private Topping $topping;
+    private array $sessionCookies = [];
 
     protected function setUp(): void
     {
@@ -29,14 +30,28 @@ class CheckoutControllerTest extends TestCase
         $this->pizza->toppings()->attach($this->topping->id);
     }
 
+    private function captureSession($response): void
+    {
+        $cookie = $response->getCookie(config('session.cookie'));
+        if ($cookie) {
+            $this->sessionCookies[config('session.cookie')] = $cookie->getValue();
+        }
+    }
+
+    private function withSessionCookies()
+    {
+        return $this->withCookies($this->sessionCookies);
+    }
+
     private function addItemToCart(): void
     {
-        $this->post(route('cart.add'), [
+        $response = $this->post(route('cart.add'), [
             'pizza_id' => $this->pizza->id,
             'size' => 'medium',
             'crust' => 'regular',
             'quantity' => 1,
         ]);
+        $this->captureSession($response);
     }
 
     // ─── Checkout Page ──────────────────────────────────────────────
@@ -45,7 +60,7 @@ class CheckoutControllerTest extends TestCase
     {
         $this->addItemToCart();
 
-        $response = $this->get(route('checkout'));
+        $response = $this->withSessionCookies()->get(route('checkout'));
 
         $response->assertStatus(200);
         $response->assertViewIs('customer.checkout');
@@ -66,7 +81,7 @@ class CheckoutControllerTest extends TestCase
     {
         $this->addItemToCart();
 
-        $response = $this->post(route('checkout.store'), [
+        $response = $this->withSessionCookies()->post(route('checkout.store'), [
             'customer_name' => 'John Doe',
             'customer_email' => 'john@example.com',
             'customer_phone' => '555-1234',
@@ -86,7 +101,7 @@ class CheckoutControllerTest extends TestCase
     {
         $this->addItemToCart();
 
-        $response = $this->post(route('checkout.store'), []);
+        $response = $this->withSessionCookies()->post(route('checkout.store'), []);
 
         $response->assertSessionHasErrors(['customer_name', 'customer_email']);
     }
@@ -95,7 +110,7 @@ class CheckoutControllerTest extends TestCase
     {
         $this->addItemToCart();
 
-        $response = $this->post(route('checkout.store'), [
+        $response = $this->withSessionCookies()->post(route('checkout.store'), [
             'customer_name' => 'John',
             'customer_email' => 'not-an-email',
         ]);
@@ -119,14 +134,14 @@ class CheckoutControllerTest extends TestCase
     {
         $this->addItemToCart();
 
-        $this->post(route('checkout.store'), [
+        $this->withSessionCookies()->post(route('checkout.store'), [
             'customer_name' => 'John',
             'customer_email' => 'john@test.com',
         ]);
 
         $order = Order::first();
 
-        $response = $this->get(route('checkout.payment', $order->id));
+        $response = $this->withSessionCookies()->get(route('checkout.payment', $order->id));
 
         $response->assertStatus(200);
         $response->assertViewIs('customer.payment');
@@ -137,7 +152,7 @@ class CheckoutControllerTest extends TestCase
     {
         $this->addItemToCart();
 
-        $this->post(route('checkout.store'), [
+        $this->withSessionCookies()->post(route('checkout.store'), [
             'customer_name' => 'John',
             'customer_email' => 'john@test.com',
         ]);
@@ -145,7 +160,7 @@ class CheckoutControllerTest extends TestCase
         $order = Order::first();
         $order->update(['status' => 'confirmed']);
 
-        $response = $this->get(route('checkout.payment', $order->id));
+        $response = $this->withSessionCookies()->get(route('checkout.payment', $order->id));
 
         $response->assertRedirect(route('order.confirmation', $order->id));
     }
@@ -156,16 +171,17 @@ class CheckoutControllerTest extends TestCase
     {
         $this->addItemToCart();
 
-        $this->post(route('checkout.store'), [
+        $this->withSessionCookies()->post(route('checkout.store'), [
             'customer_name' => 'John',
             'customer_email' => 'john@test.com',
         ]);
 
         $order = Order::first();
 
-        $response = $this->post(route('checkout.processPayment', $order->id), [
+        $response = $this->withSessionCookies()->post(route('checkout.processPayment', $order->id), [
             'payment_method' => 'credit_card',
             'card_number' => '4111111111111111',
+            'card_name' => 'John Doe',
             'card_expiry' => '12/28',
             'card_cvv' => '123',
         ]);
@@ -185,16 +201,17 @@ class CheckoutControllerTest extends TestCase
     {
         $this->addItemToCart();
 
-        $this->post(route('checkout.store'), [
+        $this->withSessionCookies()->post(route('checkout.store'), [
             'customer_name' => 'John',
             'customer_email' => 'john@test.com',
         ]);
 
         $order = Order::first();
 
-        $response = $this->post(route('checkout.processPayment', $order->id), [
+        $response = $this->withSessionCookies()->post(route('checkout.processPayment', $order->id), [
             'payment_method' => 'credit_card',
             'card_number' => '4111111111110000',
+            'card_name' => 'John Doe',
             'card_expiry' => '12/28',
             'card_cvv' => '123',
         ]);
@@ -210,14 +227,14 @@ class CheckoutControllerTest extends TestCase
     {
         $this->addItemToCart();
 
-        $this->post(route('checkout.store'), [
+        $this->withSessionCookies()->post(route('checkout.store'), [
             'customer_name' => 'Jane',
             'customer_email' => 'jane@test.com',
         ]);
 
         $order = Order::first();
 
-        $response = $this->post(route('checkout.processPayment', $order->id), [
+        $response = $this->withSessionCookies()->post(route('checkout.processPayment', $order->id), [
             'payment_method' => 'paypal',
             'paypal_email' => 'jane@paypal.com',
         ]);
@@ -233,14 +250,14 @@ class CheckoutControllerTest extends TestCase
     {
         $this->addItemToCart();
 
-        $this->post(route('checkout.store'), [
+        $this->withSessionCookies()->post(route('checkout.store'), [
             'customer_name' => 'Jane',
             'customer_email' => 'jane@test.com',
         ]);
 
         $order = Order::first();
 
-        $response = $this->post(route('checkout.processPayment', $order->id), [
+        $response = $this->withSessionCookies()->post(route('checkout.processPayment', $order->id), [
             'payment_method' => 'paypal',
             'paypal_email' => 'fail_user@paypal.com',
         ]);
@@ -253,14 +270,14 @@ class CheckoutControllerTest extends TestCase
     {
         $this->addItemToCart();
 
-        $this->post(route('checkout.store'), [
+        $this->withSessionCookies()->post(route('checkout.store'), [
             'customer_name' => 'John',
             'customer_email' => 'john@test.com',
         ]);
 
         $order = Order::first();
 
-        $response = $this->post(route('checkout.processPayment', $order->id), [
+        $response = $this->withSessionCookies()->post(route('checkout.processPayment', $order->id), [
             'payment_method' => 'bitcoin',
         ]);
 
@@ -271,19 +288,19 @@ class CheckoutControllerTest extends TestCase
     {
         $this->addItemToCart();
 
-        $this->post(route('checkout.store'), [
+        $this->withSessionCookies()->post(route('checkout.store'), [
             'customer_name' => 'John',
             'customer_email' => 'john@test.com',
         ]);
 
         $order = Order::first();
 
-        $response = $this->post(route('checkout.processPayment', $order->id), [
+        $response = $this->withSessionCookies()->post(route('checkout.processPayment', $order->id), [
             'payment_method' => 'credit_card',
             // missing card fields
         ]);
 
-        $response->assertSessionHasErrors(['card_number', 'card_expiry', 'card_cvv']);
+        $response->assertSessionHasErrors(['card_number', 'card_name', 'card_expiry', 'card_cvv']);
     }
 
     public function test_successful_payment_clears_cart(): void
@@ -291,16 +308,17 @@ class CheckoutControllerTest extends TestCase
         $this->addItemToCart();
         $this->assertEquals(1, CartItem::count());
 
-        $this->post(route('checkout.store'), [
+        $this->withSessionCookies()->post(route('checkout.store'), [
             'customer_name' => 'John',
             'customer_email' => 'john@test.com',
         ]);
 
         $order = Order::first();
 
-        $this->post(route('checkout.processPayment', $order->id), [
+        $this->withSessionCookies()->post(route('checkout.processPayment', $order->id), [
             'payment_method' => 'credit_card',
             'card_number' => '4111111111111111',
+            'card_name' => 'John Doe',
             'card_expiry' => '12/28',
             'card_cvv' => '123',
         ]);

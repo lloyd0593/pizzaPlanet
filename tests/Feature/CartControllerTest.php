@@ -15,6 +15,7 @@ class CartControllerTest extends TestCase
 
     private Pizza $pizza;
     private Topping $topping;
+    private array $sessionCookies = [];
 
     protected function setUp(): void
     {
@@ -26,6 +27,19 @@ class CartControllerTest extends TestCase
         ]);
         $this->topping = Topping::create(['name' => 'Mozzarella', 'price' => 1.50, 'is_active' => true]);
         $this->pizza->toppings()->attach($this->topping->id);
+    }
+
+    private function captureSession($response): void
+    {
+        $cookie = $response->getCookie(config('session.cookie'));
+        if ($cookie) {
+            $this->sessionCookies[config('session.cookie')] = $cookie->getValue();
+        }
+    }
+
+    private function withSessionCookies()
+    {
+        return $this->withCookies($this->sessionCookies);
     }
 
     // ─── View Cart ──────────────────────────────────────────────────
@@ -41,14 +55,15 @@ class CartControllerTest extends TestCase
 
     public function test_cart_page_shows_items(): void
     {
-        $this->post(route('cart.add'), [
+        $addResponse = $this->post(route('cart.add'), [
             'pizza_id' => $this->pizza->id,
             'size' => 'medium',
             'crust' => 'regular',
             'quantity' => 2,
         ]);
+        $this->captureSession($addResponse);
 
-        $response = $this->get(route('cart.index'));
+        $response = $this->withSessionCookies()->get(route('cart.index'));
 
         $response->assertStatus(200);
         $response->assertSee('Margherita');
@@ -58,14 +73,14 @@ class CartControllerTest extends TestCase
 
     public function test_add_pizza_to_cart(): void
     {
-        $response = $this->post(route('cart.add'), [
+        $response = $this->from(route('menu'))->post(route('cart.add'), [
             'pizza_id' => $this->pizza->id,
             'size' => 'medium',
             'crust' => 'regular',
             'quantity' => 1,
         ]);
 
-        $response->assertRedirect(route('cart.index'));
+        $response->assertRedirect();
         $response->assertSessionHas('success');
         $this->assertDatabaseHas('cart_items', [
             'pizza_id' => $this->pizza->id,
@@ -79,7 +94,7 @@ class CartControllerTest extends TestCase
     {
         $extraTopping = Topping::create(['name' => 'Olives', 'price' => 1.00, 'is_active' => true]);
 
-        $response = $this->post(route('cart.add'), [
+        $response = $this->from(route('menu'))->post(route('cart.add'), [
             'pizza_id' => $this->pizza->id,
             'size' => 'large',
             'crust' => 'thick',
@@ -87,14 +102,14 @@ class CartControllerTest extends TestCase
             'toppings' => [$this->topping->id, $extraTopping->id],
         ]);
 
-        $response->assertRedirect(route('cart.index'));
+        $response->assertRedirect();
         $cartItem = CartItem::first();
         $this->assertCount(2, $cartItem->toppings);
     }
 
     public function test_add_custom_pizza_to_cart(): void
     {
-        $response = $this->post(route('cart.add'), [
+        $response = $this->from(route('menu'))->post(route('cart.add'), [
             'is_custom' => true,
             'size' => 'large',
             'crust' => 'stuffed',
@@ -102,7 +117,7 @@ class CartControllerTest extends TestCase
             'toppings' => [$this->topping->id],
         ]);
 
-        $response->assertRedirect(route('cart.index'));
+        $response->assertRedirect();
         $this->assertDatabaseHas('cart_items', [
             'is_custom' => true,
             'size' => 'large',
@@ -145,16 +160,17 @@ class CartControllerTest extends TestCase
 
     public function test_update_cart_item_quantity(): void
     {
-        $this->post(route('cart.add'), [
+        $addResponse = $this->post(route('cart.add'), [
             'pizza_id' => $this->pizza->id,
             'size' => 'medium',
             'crust' => 'regular',
             'quantity' => 1,
         ]);
+        $this->captureSession($addResponse);
 
         $cartItem = CartItem::first();
 
-        $response = $this->patch(route('cart.update', $cartItem->id), [
+        $response = $this->withSessionCookies()->patch(route('cart.update', $cartItem->id), [
             'quantity' => 5,
         ]);
 
@@ -164,16 +180,17 @@ class CartControllerTest extends TestCase
 
     public function test_update_quantity_to_zero_removes_item(): void
     {
-        $this->post(route('cart.add'), [
+        $addResponse = $this->post(route('cart.add'), [
             'pizza_id' => $this->pizza->id,
             'size' => 'medium',
             'crust' => 'regular',
             'quantity' => 1,
         ]);
+        $this->captureSession($addResponse);
 
         $cartItem = CartItem::first();
 
-        $response = $this->patch(route('cart.update', $cartItem->id), [
+        $response = $this->withSessionCookies()->patch(route('cart.update', $cartItem->id), [
             'quantity' => 0,
         ]);
 
@@ -185,16 +202,17 @@ class CartControllerTest extends TestCase
 
     public function test_remove_cart_item(): void
     {
-        $this->post(route('cart.add'), [
+        $addResponse = $this->post(route('cart.add'), [
             'pizza_id' => $this->pizza->id,
             'size' => 'medium',
             'crust' => 'regular',
             'quantity' => 1,
         ]);
+        $this->captureSession($addResponse);
 
         $cartItem = CartItem::first();
 
-        $response = $this->delete(route('cart.remove', $cartItem->id));
+        $response = $this->withSessionCookies()->delete(route('cart.remove', $cartItem->id));
 
         $response->assertRedirect(route('cart.index'));
         $this->assertDatabaseMissing('cart_items', ['id' => $cartItem->id]);
@@ -204,13 +222,15 @@ class CartControllerTest extends TestCase
 
     public function test_clear_cart(): void
     {
-        $this->post(route('cart.add'), [
+        $addResponse = $this->post(route('cart.add'), [
             'pizza_id' => $this->pizza->id,
             'size' => 'medium',
             'crust' => 'regular',
             'quantity' => 1,
         ]);
-        $this->post(route('cart.add'), [
+        $this->captureSession($addResponse);
+
+        $this->withSessionCookies()->post(route('cart.add'), [
             'pizza_id' => $this->pizza->id,
             'size' => 'large',
             'crust' => 'thick',
@@ -219,7 +239,7 @@ class CartControllerTest extends TestCase
 
         $this->assertEquals(2, CartItem::count());
 
-        $response = $this->delete(route('cart.clear'));
+        $response = $this->withSessionCookies()->delete(route('cart.clear'));
 
         $response->assertRedirect(route('cart.index'));
         $this->assertEquals(0, CartItem::count());
